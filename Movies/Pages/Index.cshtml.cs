@@ -9,33 +9,70 @@ namespace Movies.Pages
 {
     public class IndexModel : PageModel
     {
-        MovieDatabase movieDataBase = new MovieDatabase();
-
         public List<Movie> Movies;
+
+        [BindProperty]
+        public string search { get; set; }
+
+        [BindProperty]
+        public List<string> mpaa { get; set; } = new List<string>();
+
+        [BindProperty]
+        public float? minIMDB { get; set; }
+
+        [BindProperty]
+        public float? maxIMDB { get; set; }
+
 
         public void OnGet()
         {
-            Movies = movieDataBase.All;
+            Movies = MovieDatabase.All;
         }
 
-        public void OnPost(string search, List<string> rating)
+        public void OnPost(string search, List<string> mpaa, float? minIMDB, float? maxIMDB)
         {
-            if (search != null && rating.Count != 0)
+            Movies = MovieDatabase.All;
+
+            if(search != null)
             {
-                Movies = movieDataBase.SearchAndFilter(search, rating);
+                Movies = MovieDatabase.Search(Movies, search);
+            }
+
+            if(mpaa.Count != 0)
+            {
+                Movies = MovieDatabase.FilterByMPAA(Movies, mpaa);
+            }
+
+            if(minIMDB != null)
+            {
+                Movies = MovieDatabase.FilterByMinIMDB(Movies, (float)minIMDB);
+            }
+
+            if(maxIMDB != null)
+            {
+                Movies = MovieDatabase.FilterByMaxIMDB(Movies, (float)maxIMDB);
+            }
+
+
+
+
+
+            /*if (search != null && rating.Count != 0)
+            {
+                Movies = MovieDataBase.SearchAndFilter(search, rating);
             }
             else if (rating.Count != 0)
             {
-                Movies = movieDataBase.Filter(rating);
+                Movies = MovieDataBase.Filter(rating);
             }
             else if (search != null)
             {
-                Movies = movieDataBase.Search(search);
+                Movies = MovieDataBase.Search(search);
             }
             else
             {
-                Movies = movieDataBase.All;
-            }
+                Movies = MovieDataBase.All;
+            }*/
         }
     }
 }
